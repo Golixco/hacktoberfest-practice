@@ -6,11 +6,11 @@ import re
 
 POSITIVE = {
     "good", "happy", "love", "great", "excellent", "amazing",
-    "wonderful", "best", "nice", "fantastic", "awesome"
+    "wonderful", "best", "nice", "fantastic", "awesome" , "Gambare"
 }
 NEGATIVE = {
     "bad", "sad", "hate", "terrible", "awful", "worst",
-    "angry", "poor", "horrible", "disappointing"
+    "angry", "poor", "horrible", "disappointing" , "Tatakae"
 }
 
 def analyze_sentiment(text: str) -> str:
