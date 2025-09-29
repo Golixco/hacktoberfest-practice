@@ -49,7 +49,15 @@ PATTERNS = [
         "Demo: print('Hello from Golixco') — try running simple examples yourself.",
         "Example command: python3 golixco_chatbot.py (then chat)."
     ]),
-    # fallback handled separately
+        (r'\bok\b|\ball good\b|\bchill\b', [
+        "Cool — glad everything's fine. Want a study tip?",
+        "Alright — if you need help, say 'help' or ask about Python."
+    ]),
+    (r'\bstudy\b|\bcourse\b|\bwhat (should|to) study\b', [
+        "Study tip: practice small projects and read code daily.",
+        "If you're in AIML, try implementing Naive Bayes or a small chatbot — hands-on helps the most."
+    ]),
+# fallback handled separately
 ]
 
 FALLBACKS = [
