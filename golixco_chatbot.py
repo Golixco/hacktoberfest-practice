@@ -10,6 +10,18 @@ from pathlib import Path
 
 LOG_FILE = Path("conversation.log")
 
+# --- simple spam detector (student-level, word-scoring) ---
+SPAM_WORDS = {"free", "click", "buy", "subscribe", "visit", "win", "prize", "discount"}
+SPAM_THRESHOLD = 1  # >=1 spam words -> flagged
+
+def is_spam(text: str) -> bool:
+    words = set(re.findall(r"\b\w+\b", text.lower()))
+    hits = sum(1 for w in words if w in SPAM_WORDS)
+    return hits >= SPAM_THRESHOLD
+
+# --- end spam detector ---
+
+
 # small pattern -> responses list (feels like AIML categories)
 PATTERNS = [
     (r'\bhi\b|\bhello\b|\bhey\b', [
@@ -99,7 +111,14 @@ def main():
             print("Golixco: Bye — good luck with Hacktoberfest!")
             save_line(text, "Bye — good luck with Hacktoberfest!")
             break
-        response = match_response(text)
+        
+        # quick spam check (student-level)
+        if is_spam(text):
+            reply = "I think this might be spam — I can't help with that. If this is a mistake, try rephrasing."
+            print("Golixco:", reply)
+            save_line(text, reply)
+            continue
+response = match_response(text)
         print("Golixco:", response)
         save_line(text, response)
 
