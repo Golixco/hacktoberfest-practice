@@ -10,18 +10,6 @@ from pathlib import Path
 
 LOG_FILE = Path("conversation.log")
 
-# --- simple spam detector (student-level, word-scoring) ---
-SPAM_WORDS = {"free", "click", "buy", "subscribe", "visit", "win", "prize", "discount"}
-SPAM_THRESHOLD = 1  # >=1 spam words -> flagged
-
-def is_spam(text: str) -> bool:
-    words = set(re.findall(r"\b\w+\b", text.lower()))
-    hits = sum(1 for w in words if w in SPAM_WORDS)
-    return hits >= SPAM_THRESHOLD
-
-# --- end spam detector ---
-
-
 # small pattern -> responses list (feels like AIML categories)
 PATTERNS = [
     (r'\bhi\b|\bhello\b|\bhey\b', [
@@ -61,7 +49,7 @@ PATTERNS = [
         "Demo: print('Hello from Golixco') — try running simple examples yourself.",
         "Example command: python3 golixco_chatbot.py (then chat)."
     ]),
-        (r'\bok\b|\ball good\b|\bchill\b', [
+    (r'\bok\b|\ball good\b|\bchill\b', [
         "Cool — glad everything's fine. Want a study tip?",
         "Alright — if you need help, say 'help' or ask about Python."
     ]),
@@ -69,7 +57,7 @@ PATTERNS = [
         "Study tip: practice small projects and read code daily.",
         "If you're in AIML, try implementing Naive Bayes or a small chatbot — hands-on helps the most."
     ]),
-# fallback handled separately
+    # fallback handled separately
 ]
 
 FALLBACKS = [
@@ -78,12 +66,24 @@ FALLBACKS = [
     "I'm learning — that question is new to me. Try a simpler phrase."
 ]
 
+# --- simple spam detector (student-level, word-scoring) ---
+SPAM_WORDS = {"free", "click", "buy", "subscribe", "visit", "win", "prize", "discount"}
+SPAM_THRESHOLD = 1  # >=1 spam words -> flagged
+
+def is_spam(text: str) -> bool:
+    words = set(re.findall(r"\b\w+\b", text.lower()))
+    hits = sum(1 for w in words if w in SPAM_WORDS)
+    return hits >= SPAM_THRESHOLD
+# --- end spam detector ---
+
+
 def match_response(text: str) -> str:
     t = text.lower()
     for pattern, responses in PATTERNS:
         if re.search(pattern, t):
             return random.choice(responses)
     return random.choice(FALLBACKS)
+
 
 def save_line(user: str, bot: str):
     ts = datetime.now().isoformat()
@@ -93,9 +93,11 @@ def save_line(user: str, bot: str):
     except Exception:
         pass  # logging must not crash the chat
 
+
 def intro():
     print("Golixco — small AIML-ish chatbot (student project). Type 'quit' to exit.")
     print("Try: hello, how are you, python, hacktoberfest, joke, demo, help")
+
 
 def main():
     intro()
@@ -105,22 +107,26 @@ def main():
         except (KeyboardInterrupt, EOFError):
             print("\nBye — keep learning!")
             break
+
         if not text:
             continue
+
         if text.lower() in ("quit", "exit", "bye"):
             print("Golixco: Bye — good luck with Hacktoberfest!")
             save_line(text, "Bye — good luck with Hacktoberfest!")
             break
-        
+
         # quick spam check (student-level)
         if is_spam(text):
             reply = "I think this might be spam — I can't help with that. If this is a mistake, try rephrasing."
             print("Golixco:", reply)
             save_line(text, reply)
             continue
-response = match_response(text)
+
+        response = match_response(text)
         print("Golixco:", response)
         save_line(text, response)
+
 
 if __name__ == "__main__":
     main()
